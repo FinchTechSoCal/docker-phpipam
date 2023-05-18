@@ -15,8 +15,8 @@ services:
       - IPAM_DATABASE_WEBHOST=%
     restart: unless-stopped
     volumes:
-      - phpipam-logo:/phpipam/css/images/logo
-      - phpipam-ca:/usr/local/share/ca-certificates:ro
+      - ${LOCVOL1}/phpipam/logo:/phpipam/css/images/logo
+      - ${LOCVOL1}/phpipam/ca:/usr/local/share/ca-certificates:ro
     depends_on:
       - phpipam-db
 
@@ -32,7 +32,7 @@ services:
       - SCAN_INTERVAL=1h
     restart: unless-stopped
     volumes:
-      - phpipam-ca:/usr/local/share/ca-certificates:ro
+      - ${LOCVOL1}/phpipam/ca:/usr/local/share/ca-certificates:ro
     depends_on:
       - phpipam-db
 
@@ -50,7 +50,7 @@ services:
       - MYSQL_USER=${IPAM_DATABASE_USER}
       - MYSQL_PASSWORD=${IPAM_DATABASE_PASS}
     volumes:
-      - phpipam-db-data:/var/lib/mysql
+      - ${LOCVOL1}/phpipam/db:/var/lib/mysql
     restart: unless-stopped
 
 
