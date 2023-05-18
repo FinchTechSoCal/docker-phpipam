@@ -52,12 +52,6 @@ services:
     volumes:
       - ${LOCVOL1}/phpipam/db:/var/lib/mysql
     restart: unless-stopped
-
-
-volumes:
-  phpipam-db-data: ${LOCVOL1}/phpipam/db
-  phpipam-logo: ${LOCVOL1}/phpipam/app
-  phpipam-ca: ${LOCVOL1}/phpipam/ca
 #
 networks:
   default:
