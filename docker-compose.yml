@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  phpipam-web:
+    image: phpipam/phpipam-www:latest
+    container_name: phpipam
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - IPAM_DATABASE_HOST=phpipam-db
+      - IPAM_DATABASE_NAME=${IPAM_DATABASE_NAME}
+      - IPAM_DATABASE_USER=${IPAM_DATABASE_USER}
+      - IPAM_DATABASE_PASS=${IPAM_DATABASE_PASS}
+      - IPAM_DATABASE_WEBHOST=%
+    restart: unless-stopped
+    volumes:
+      - phpipam-logo:/phpipam/css/images/logo
+      - phpipam-ca:/usr/local/share/ca-certificates:ro
+    depends_on:
+      - phpipam-db
+
+  phpipam-cron:
+    image: phpipam/phpipam-cron:latest
+    container_name: phpipam-cron
+    environment:
+      - TZ=${TZ}
+      - IPAM_DATABASE_HOST=phpipam-db
+      - IPAM_DATABASE_NAME=${IPAM_DATABASE_NAME}
+      - IPAM_DATABASE_USER=${IPAM_DATABASE_USER}
+      - IPAM_DATABASE_PASS=${IPAM_DATABASE_PASS}
+      - SCAN_INTERVAL=1h
+    restart: unless-stopped
+    volumes:
+      - phpipam-ca:/usr/local/share/ca-certificates:ro
+    depends_on:
+      - phpipam-db
+
+#
+  phpipam-db:
+    image: lscr.io/linuxserver/mariadb:latest
+    container_name: phpipam-db
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=linuxserver/mods:universal-cron
+      - MYSQL_ROOT_PASSWORD=${IPAM_DATABASE_PASS}
+      - MYSQL_DATABASE=${IPAM_DATABASE_NAME}
+      - MYSQL_USER=${IPAM_DATABASE_USER}
+      - MYSQL_PASSWORD=${IPAM_DATABASE_PASS}
+    volumes:
+      - phpipam-db-data:/var/lib/mysql
+    restart: unless-stopped
+
+
+volumes:
+  phpipam-db-data: ${LOCVOL1}/phpipam/db
+  phpipam-logo: ${LOCVOL1}/phpipam/app
+  phpipam-ca: ${LOCVOL1}/phpipam/ca
+#
+networks:
+  default:
+    external: true
+    name: ${CONNET}
